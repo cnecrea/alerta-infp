@@ -7,7 +7,5 @@
   "codeowners": ["@cnecrea"],
   "iot_class": "cloud_polling",
   "config_flow": true,
-  "icons": {
-    "logo": "custom_components/alerta_infp/icons/logo.png"
-  }
+  "logo": "custom_components/alerta_infp/logo.png"
 }
