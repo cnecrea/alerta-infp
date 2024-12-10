@@ -1,5 +1,4 @@
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN, DEFAULT_SCAN_INTERVAL
 from .helpers import fetch_earthquake_data
 import logging
@@ -52,6 +51,17 @@ class INFPAlertSensor(SensorEntity):
     def extra_state_attributes(self):
         """Return additional attributes of the sensor."""
         return self._attributes
+
+    @property
+    def device_info(self):
+        """Return device information for linking entities."""
+        return {
+            "identifiers": {(DOMAIN, self._entry_id)},
+            "name": "INFP Alerts",
+            "manufacturer": "INFP",
+            "model": "Earthquake Alert System",
+            "entry_type": "service",
+        }
 
     async def async_update(self):
         """Update the sensor state."""
