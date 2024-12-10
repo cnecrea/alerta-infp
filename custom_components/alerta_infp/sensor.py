@@ -62,9 +62,9 @@ class INFPAlertSensor(SensorEntity):
         """Return device information for linking entities."""
         return {
             "identifiers": {(DOMAIN, self._entry_id)},
-            "name": "INFP Alerts",
-            "manufacturer": "INFP",
-            "model": "Earthquake Alert System",
+            "name": "Alerte INFP",
+            "manufacturer": "cnecrea",
+            "model": "Monitorizează alertele seismice de pe site-ul INFP",
             "entry_type": "service",
         }
 
