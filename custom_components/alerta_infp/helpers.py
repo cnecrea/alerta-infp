@@ -8,13 +8,15 @@ def fetch_earthquake_data():
     try:
         response = requests.get(INFP_URL, timeout=DEFAULT_TIMEOUT)
         response.raise_for_status()
-        # Example parsing logic
-        data = parse_earthquake_data(response.text)
-        return data
+        # Parse multiple alerts
+        return parse_earthquake_data(response.text)
     except Exception as e:
-        return None
+        return []
 
 def parse_earthquake_data(html):
     """Parse the HTML response for earthquake data."""
-    # Implement scraping logic here
-    return {"magnitude": 4.5, "location": "București", "time": "2024-12-10 12:00"}
+    # Implement logic to parse and return multiple alerts
+    return [
+        {"id": "1", "magnitude": 4.5, "location": "București", "time": "2024-12-10 12:00"},
+        {"id": "2", "magnitude": 5.0, "location": "Iași", "time": "2024-12-10 12:05"},
+    ]
