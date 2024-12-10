@@ -43,6 +43,11 @@ class INFPAlertSensor(SensorEntity):
         return self._name
 
     @property
+    def unique_id(self):
+        """Return a unique ID for the sensor."""
+        return f"{self._entry_id}_{self._alert_id}"
+
+    @property
     def state(self):
         """Return the current state of the sensor."""
         return self._state
