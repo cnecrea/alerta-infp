@@ -1,0 +1,13 @@
+{
+  "domain": "alerta_infp",
+  "name": "Alerta INFP",
+  "version": "1.0.0",
+  "documentation": "https://github.com/cnecrea/alerta-infp",
+  "requirements": ["voluptuous"],
+  "codeowners": ["@cnecrea"],
+  "iot_class": "cloud_polling",
+  "config_flow": true,
+  "icons": {
+    "logo": "custom_components/alerta_infp/icons/logo.png"
+  }
+}

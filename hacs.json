@@ -1,0 +1,11 @@
+{
+  "name": "Alerta INFP",
+  "description": "Monitorizare alerte seismice de la INFP.",
+  "domain": "alerta_infp",
+  "repository": "https://github.com/cnecrea/alerta-infp",
+  "documentation": "https://github.com/cnecrea/alerta-infp/blob/master/README.md",
+  "requirements": ["requests"],
+  "codeowners": ["@cnecrea"],
+  "version": "1.0.0",
+  "iot_class": "cloud_polling"
+}
