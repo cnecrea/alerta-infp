@@ -7,24 +7,36 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Set up the INFP alert sensor based on a config entry."""
-    scan_interval = config_entry.options.get("scan_interval", DEFAULT_SCAN_INTERVAL)
-    name = config_entry.title
-
-    async_add_entities([INFPAlertSensor(hass, name, scan_interval, config_entry.entry_id)])
-
+    """Set up the INFP alert sensors based on a config entry."""
+    try:
+        data = await hass.async_add_executor_job(fetch_earthquake_data)
+        if data:
+            sensors = [
+                INFPAlertSensor(hass, f"Alert {alert['id']}", alert, config_entry.entry_id)
+                for alert in data
+            ]
+            async_add_entities(sensors)
+        else:
+            _LOGGER.warning("No earthquake data available.")
+    except Exception as e:
+        _LOGGER.error(f"Failed to set up sensors: {e}")
 
 class INFPAlertSensor(SensorEntity):
-    """A sensor that monitors earthquake alerts from INFP."""
+    """A sensor that monitors a specific earthquake alert from INFP."""
 
-    def __init__(self, hass, name, scan_interval, entry_id):
+    def __init__(self, hass, name, alert, entry_id):
         self._hass = hass
         self._name = name
-        self._state = None
-        self._attributes = {}
-        self._scan_interval = scan_interval
+        self._state = alert.get("magnitude", "N/A")
+        self._attributes = {
+            "location": alert.get("location"),
+            "time": alert.get("time"),
+            "depth": alert.get("depth", "Unknown"),
+            "latitude": alert.get("latitude", "Unknown"),
+            "longitude": alert.get("longitude", "Unknown"),
+        }
         self._entry_id = entry_id
-        self._last_alert_id = None
+        self._alert_id = alert.get("id")
 
     @property
     def name(self):
@@ -42,30 +54,21 @@ class INFPAlertSensor(SensorEntity):
         return self._attributes
 
     async def async_update(self):
-        """Fetch the latest data and update the sensor state."""
-        _LOGGER.debug("Updating INFP Alert Sensor")
+        """Update the sensor state."""
+        _LOGGER.debug(f"Updating sensor {self._name}")
         try:
             data = await self._hass.async_add_executor_job(fetch_earthquake_data)
-            if data:
-                alert_id = data.get("id")
-                # Avoid processing the same alert multiple times
-                if alert_id and alert_id != self._last_alert_id:
-                    self._last_alert_id = alert_id
-                    self._state = data.get("magnitude", "N/A")
-                    self._attributes = {
-                        "location": data.get("location"),
-                        "time": data.get("time"),
-                        "depth": data.get("depth"),
-                        "latitude": data.get("latitude"),
-                        "longitude": data.get("longitude"),
-                    }
-                    _LOGGER.info(f"New earthquake detected: {data}")
-                else:
-                    _LOGGER.debug("No new alerts.")
-            else:
-                _LOGGER.warning("No data received from INFP.")
-                self._state = "No Data"
-                self._attributes = {}
+            for alert in data:
+                if alert.get("id") == self._alert_id:
+                    self._state = alert.get("magnitude", "N/A")
+                    self._attributes.update({
+                        "location": alert.get("location"),
+                        "time": alert.get("time"),
+                        "depth": alert.get("depth", "Unknown"),
+                        "latitude": alert.get("latitude", "Unknown"),
+                        "longitude": alert.get("longitude", "Unknown"),
+                    })
+                    _LOGGER.info(f"Updated sensor {self._name} with new data.")
+                    break
         except Exception as e:
-            _LOGGER.error(f"Error fetching data from INFP: {e}")
-            self._state = "Error"
+            _LOGGER.error(f"Failed to update sensor {self._name}: {e}")
